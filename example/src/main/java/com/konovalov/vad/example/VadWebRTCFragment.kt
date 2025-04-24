@@ -22,16 +22,13 @@ import permissions.dispatcher.NeedsPermission
 import permissions.dispatcher.RuntimePermissions
 
 @RuntimePermissions
-class VadWebRTCFragment : Fragment(),
-    AudioCallback,
-    View.OnClickListener,
-    AdapterView.OnItemSelectedListener {
+class VadWebRTCFragment : Fragment(), AudioCallback, View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     private val DEFAULT_SAMPLE_RATE = SampleRate.SAMPLE_RATE_8K
     private val DEFAULT_FRAME_SIZE = FrameSize.FRAME_SIZE_240
     private val DEFAULT_MODE = Mode.VERY_AGGRESSIVE
     private val DEFAULT_SILENCE_DURATION_MS = 300
-    private val DEFAULT_SPEECH_DURATION_MS = 50
+    private val DEFAULT_SPEECH_DURATION_MS = 100
 
     private val SPINNER_SAMPLE_RATE_TAG = "sample_rate"
     private val SPINNER_FRAME_SIZE_TAG = "frame_size"
@@ -54,24 +51,14 @@ class VadWebRTCFragment : Fragment(),
     private lateinit var vad: VadWebRTC
     private var isRecording = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        parent: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, parent: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.fragment_vad_main, parent, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        vad = Vad.builder()
-            .setSampleRate(DEFAULT_SAMPLE_RATE)
-            .setFrameSize(DEFAULT_FRAME_SIZE)
-            .setMode(DEFAULT_MODE)
-            .setSilenceDurationMs(DEFAULT_SILENCE_DURATION_MS)
-            .setSpeechDurationMs(DEFAULT_SPEECH_DURATION_MS)
-            .build()
+        vad = Vad.builder().setSampleRate(DEFAULT_SAMPLE_RATE).setFrameSize(DEFAULT_FRAME_SIZE).setMode(DEFAULT_MODE).setSilenceDurationMs(DEFAULT_SILENCE_DURATION_MS).setSpeechDurationMs(DEFAULT_SPEECH_DURATION_MS).build()
 
         recorder = VoiceRecorder(this)
 
@@ -110,11 +97,11 @@ class VadWebRTCFragment : Fragment(),
 
     override fun onAudio(audioData: ShortArray) {
         if (vad.isSpeech(audioData)) {
-            requireActivity().runOnUiThread{
+            requireActivity().runOnUiThread {
                 speechTextView.setText(R.string.speech_detected)
             }
         } else {
-            requireActivity().runOnUiThread{
+            requireActivity().runOnUiThread {
                 speechTextView.setText(R.string.noise_detected)
             }
         }
@@ -182,11 +169,7 @@ class VadWebRTCFragment : Fragment(),
         recordingButton.isEnabled = true
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         onRequestPermissionsResult(requestCode, grantResults)
     }
